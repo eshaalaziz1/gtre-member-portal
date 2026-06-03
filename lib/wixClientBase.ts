@@ -1,9 +1,7 @@
 import { createClient, OAuthStrategy, type Tokens } from "@wix/sdk";
 import { members } from "@wix/members";
 
-export function getRedirectUri(origin: string) {
-  return `${origin}/api/oauth/callback`;
-}
+export { getRedirectUri, getSiteUrl, getOAuthOriginalUri } from "./siteUrl";
 
 export const SESSION_COOKIE_OPTIONS = { path: "/" } as const;
 

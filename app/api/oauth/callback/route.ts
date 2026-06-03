@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createWixClient, parseSessionCookie } from "@/lib/wixClientBase";
+import { getSiteUrl } from "@/lib/siteUrl";
+
+function siteRedirect(path: string) {
+  return NextResponse.redirect(new URL(path, getSiteUrl()));
+}
 
 export async function GET(request: NextRequest) {
   const oauthCookie = request.cookies.get("oauthRedirectData");
 
   if (!oauthCookie?.value) {
-    return NextResponse.redirect(
-      new URL("/?error=missing_login_data", request.url),
-    );
+    return siteRedirect("/?error=missing_login_data");
   }
 
   const oauthData = JSON.parse(oauthCookie.value);
@@ -18,17 +21,13 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     const message = encodeURIComponent(errorDescription ?? error);
-    const response = NextResponse.redirect(
-      new URL(`/?error=${message}`, request.url),
-    );
+    const response = siteRedirect(`/?error=${message}`);
     response.cookies.delete("oauthRedirectData");
     return response;
   }
 
   if (!code || !state) {
-    const response = NextResponse.redirect(
-      new URL("/?error=missing_authorization_code", request.url),
-    );
+    const response = siteRedirect("/?error=missing_authorization_code");
     response.cookies.delete("oauthRedirectData");
     return response;
   }
@@ -40,7 +39,7 @@ export async function GET(request: NextRequest) {
     const wixClient = createWixClient(sessionTokens);
     const tokens = await wixClient.auth.getMemberTokens(code, state, oauthData);
 
-    const response = NextResponse.redirect(new URL("/", request.url));
+    const response = siteRedirect("/");
     response.cookies.set("session", JSON.stringify(tokens), {
       path: "/",
       sameSite: "lax",
@@ -52,9 +51,7 @@ export async function GET(request: NextRequest) {
     const message = encodeURIComponent(
       e instanceof Error ? e.message : "Login failed",
     );
-    const response = NextResponse.redirect(
-      new URL(`/?error=${message}`, request.url),
-    );
+    const response = siteRedirect(`/?error=${message}`);
     response.cookies.delete("oauthRedirectData");
     return response;
   }

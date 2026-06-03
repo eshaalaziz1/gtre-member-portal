@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   createWixClient,
+  getOAuthOriginalUri,
   getRedirectUri,
   parseSessionCookie,
 } from "@/lib/wixClientBase";
@@ -69,8 +70,8 @@ export default function MemberAuth({
     try {
       const session = parseSessionCookie(Cookies.get("session"));
       const client = createWixClient(session);
-      const originalURI = `${window.location.origin}/`;
-      const redirectURI = getRedirectUri(window.location.origin);
+      const originalURI = getOAuthOriginalUri();
+      const redirectURI = getRedirectUri();
       const data = client.auth.generateOAuthData(redirectURI, originalURI);
       setOAuthRedirectData(data);
       const { authUrl } = await client.auth.getAuthUrl(data, {
@@ -85,7 +86,7 @@ export default function MemberAuth({
   async function logout() {
     const session = parseSessionCookie(Cookies.get("session"));
     const client = createWixClient(session);
-    const { logoutUrl } = await client.auth.logout(window.location.href);
+    const { logoutUrl } = await client.auth.logout(getOAuthOriginalUri());
     clearSessionCookie();
     window.location.href = logoutUrl;
   }

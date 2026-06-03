@@ -4,6 +4,8 @@ import { members } from "@wix/members";
 
 export {
   getRedirectUri,
+  getSiteUrl,
+  getOAuthOriginalUri,
   parseSessionCookie,
   SESSION_COOKIE_OPTIONS,
 } from "./wixClientBase";
