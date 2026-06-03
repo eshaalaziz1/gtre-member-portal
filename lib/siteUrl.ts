@@ -1,10 +1,32 @@
 const DEFAULT_SITE_URL = "http://localhost:3000";
 
-/** Base site URL (no trailing slash). Uses NEXT_PUBLIC_SITE_URL, else local dev default. */
+function normalizeBaseUrl(url: string): string {
+  return url.replace(/\/$/, "");
+}
+
+/**
+ * Base site URL (no trailing slash).
+ * 1. NEXT_PUBLIC_SITE_URL when set (preferred for production)
+ * 2. Browser origin on the client (works even if env was missing at build)
+ * 3. VERCEL_URL on the server (auto-set on Vercel)
+ * 4. http://localhost:3000 for local dev
+ */
 export function getSiteUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  const base = configured || DEFAULT_SITE_URL;
-  return base.replace(/\/$/, "");
+  if (configured) {
+    return normalizeBaseUrl(configured);
+  }
+
+  if (typeof window !== "undefined") {
+    return normalizeBaseUrl(window.location.origin);
+  }
+
+  const vercelHost = process.env.VERCEL_URL?.trim();
+  if (vercelHost) {
+    return normalizeBaseUrl(`https://${vercelHost}`);
+  }
+
+  return DEFAULT_SITE_URL;
 }
 
 /** Wix OAuth redirect URI registered in the Headless app settings. */
