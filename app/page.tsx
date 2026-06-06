@@ -11,6 +11,8 @@ import HomeTab from "./components/portal/tabs/HomeTab";
 import MaterialsTab from "./components/portal/tabs/MaterialsTab";
 import ProfileTab from "./components/portal/tabs/ProfileTab";
 import ScheduleTab from "./components/portal/tabs/ScheduleTab";
+import { isAdminEmail } from "@/lib/admin";
+import { loadMemberPortalContent } from "@/lib/adminContent";
 import {
   getAnalystProfile,
   isExecutiveBoardRole,
@@ -50,12 +52,9 @@ function parseTab(value: string | undefined): PortalTabId {
   return "home";
 }
 
-function totalActivityCount(): number {
-  const assignmentCount = PROGRAM_WEEKS.reduce(
-    (n, w) => n + w.assignments.length,
-    0,
-  );
-  return PROGRAM_WEEKS.length + assignmentCount;
+function totalActivityCount(weeks = PROGRAM_WEEKS): number {
+  const assignmentCount = weeks.reduce((n, w) => n + w.assignments.length, 0);
+  return weeks.length + assignmentCount;
 }
 
 function activityDoneCount(activity: Awaited<ReturnType<typeof getMemberActivity>>) {
@@ -82,10 +81,13 @@ async function PortalPage({
   }
 
   const activeTab = parseTab(tabParam);
+  const portalContent = await loadMemberPortalContent(sessionValue);
+  const programWeeks = portalContent.programWeeks;
   const activity = (await getMemberActivity(sessionValue))!;
   const profile = await getAnalystProfile(sessionValue);
   const isExecutiveBoard = isExecutiveBoardRole(profile?.role ?? "");
-  const dashboard = buildDashboard(activity);
+  const isAdmin = isAdminEmail(email);
+  const dashboard = buildDashboard(activity, programWeeks);
   const authorName = email?.split("@")[0] ?? "Member";
 
   let tabContent: React.ReactNode;
@@ -97,28 +99,34 @@ async function PortalPage({
       );
       break;
     case "grades": {
-      const rows = buildGradeRows(activity);
+      const rows = buildGradeRows(activity, programWeeks);
       tabContent = (
         <GradesTab
           avgLabel={dashboard.avgQuizLabel}
           completionPct={dashboard.completionPct}
           doneCount={activityDoneCount(activity)}
-          totalCount={totalActivityCount()}
+          totalCount={totalActivityCount(programWeeks)}
           rows={rows}
         />
       );
       break;
     }
     case "assignments": {
-      const lists = buildAssignmentLists(activity);
+      const lists = buildAssignmentLists(activity, programWeeks);
       tabContent = <AssignmentsTab due={lists.due} done={lists.done} />;
       break;
     }
     case "materials":
-      tabContent = <MaterialsTab />;
+      tabContent = (
+        <MaterialsTab
+          slides={portalContent.materials.slides}
+          tools={portalContent.materials.tools}
+          placeholders={portalContent.materials.placeholders}
+        />
+      );
       break;
     case "checkin": {
-      const week = findCurrentWeek();
+      const week = findCurrentWeek(programWeeks);
       tabContent = (
         <CheckInTab
           week={week}
@@ -135,7 +143,9 @@ async function PortalPage({
       break;
     }
     case "casestudy":
-      tabContent = <CaseStudyTab />;
+      tabContent = (
+        <CaseStudyTab resources={portalContent.materials.caseStudy} />
+      );
       break;
     case "forum": {
       const detail =
@@ -170,7 +180,12 @@ async function PortalPage({
   }
 
   return (
-    <PortalShell email={email} activeTab={activeTab} dashboard={dashboard}>
+    <PortalShell
+      email={email}
+      activeTab={activeTab}
+      dashboard={dashboard}
+      isAdmin={isAdmin}
+    >
       {tabContent}
     </PortalShell>
   );

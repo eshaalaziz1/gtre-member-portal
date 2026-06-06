@@ -1,17 +1,21 @@
-import {
-  EXTERNAL_TOOLS,
-  PLACEHOLDER_SLIDES,
-  STUDY_SLIDES,
-} from "@/lib/materials";
+import type { StudySlide, ExternalTool } from "@/lib/materials";
 
-export default function MaterialsTab() {
+export default function MaterialsTab({
+  slides,
+  tools,
+  placeholders,
+}: {
+  slides: StudySlide[];
+  tools: ExternalTool[];
+  placeholders: string[];
+}) {
   return (
     <div>
       <div className="portal-section-label">Session slides</div>
       <div className="portal-resource-grid">
-        {STUDY_SLIDES.map((s) => (
+        {slides.map((s) => (
           <a
-            key={s.title}
+            key={`${s.title}-${s.url}`}
             className="portal-res-card"
             href={s.url}
             target="_blank"
@@ -26,7 +30,7 @@ export default function MaterialsTab() {
             </div>
           </a>
         ))}
-        {PLACEHOLDER_SLIDES.map((title) => (
+        {placeholders.map((title) => (
           <div key={title} className="portal-res-card disabled">
             <div className="portal-res-icon gray">
               <span>📄</span>
@@ -42,9 +46,9 @@ export default function MaterialsTab() {
         External tools
       </div>
       <div className="portal-resource-grid">
-        {EXTERNAL_TOOLS.map((tool) => (
+        {tools.map((tool) => (
           <a
-            key={tool.title}
+            key={`${tool.title}-${tool.url}`}
             className="portal-res-card"
             href={tool.url}
             target="_blank"

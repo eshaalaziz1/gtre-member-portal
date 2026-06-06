@@ -269,20 +269,52 @@ export function isPastDate(date: string): boolean {
   return date < todayIso();
 }
 
-export function findCurrentWeek(): ProgramWeek {
+export function findCurrentWeek(weeks: ProgramWeek[] = PROGRAM_WEEKS): ProgramWeek {
   const today = todayIso();
-  for (let i = PROGRAM_WEEKS.length - 1; i >= 0; i--) {
-    if (PROGRAM_WEEKS[i].event.date <= today) return PROGRAM_WEEKS[i];
+  for (let i = weeks.length - 1; i >= 0; i--) {
+    if (weeks[i].event.date <= today) return weeks[i];
   }
-  return PROGRAM_WEEKS[0];
+  return weeks[0];
 }
 
-export function getAssignmentById(id: string): ProgramAssignment | undefined {
-  for (const week of PROGRAM_WEEKS) {
+export function getAssignmentById(
+  id: string,
+  weeks: ProgramWeek[] = PROGRAM_WEEKS,
+): ProgramAssignment | undefined {
+  for (const week of weeks) {
     const found = week.assignments.find((a) => a.id === id);
     if (found) return found;
   }
   return undefined;
+}
+
+export type AssignmentOverridePatch = {
+  assignmentId: string;
+  title?: string;
+  description?: string;
+  due?: string;
+};
+
+export function applyAssignmentOverrides(
+  weeks: ProgramWeek[],
+  overrides: AssignmentOverridePatch[],
+): ProgramWeek[] {
+  const byId = new Map(overrides.map((o) => [o.assignmentId, o]));
+  if (byId.size === 0) return weeks;
+
+  return weeks.map((week) => ({
+    ...week,
+    assignments: week.assignments.map((assignment) => {
+      const patch = byId.get(assignment.id);
+      if (!patch) return assignment;
+      return {
+        ...assignment,
+        title: patch.title?.trim() || assignment.title,
+        description: patch.description?.trim() || assignment.description,
+        due: patch.due?.trim() || assignment.due,
+      };
+    }),
+  }));
 }
 
 export function formatDisplayDate(date: string): string {

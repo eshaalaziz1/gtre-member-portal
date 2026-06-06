@@ -50,11 +50,13 @@ export default function PortalShell({
   email,
   activeTab,
   dashboard,
+  isAdmin = false,
   children,
 }: {
   email: string | null;
   activeTab: PortalTabId;
   dashboard: DashboardSummary;
+  isAdmin?: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -101,6 +103,14 @@ export default function PortalShell({
                 </span>
               );
             })}
+            {isAdmin && (
+              <>
+                <div className="portal-sb-section-label">Admin</div>
+                <Link href="/admin" className="portal-nav-item">
+                  <span className="portal-nav-label">Admin portal</span>
+                </Link>
+              </>
+            )}
           </nav>
           <div className="portal-sb-footer">
             <span className="portal-semester-pill">Spring 2026</span>

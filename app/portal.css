@@ -1256,3 +1256,139 @@
     display: none;
   }
 }
+
+/* Admin portal */
+.admin-sidebar .portal-nav-item {
+  justify-content: space-between;
+}
+
+.admin-nav-badge {
+  background: var(--gt-gold);
+  color: var(--gt-navy);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.admin-lead {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 18px;
+  max-width: 720px;
+}
+
+.admin-note {
+  background: #fff;
+  border: 1px solid var(--gt-border);
+  border-left: 3px solid var(--gt-gold);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+.admin-note code {
+  font-size: 11px;
+  background: #f4f2ee;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.admin-card {
+  background: #fff;
+  border: 1px solid var(--gt-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  max-width: 720px;
+}
+
+.admin-card-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-muted {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.admin-success {
+  font-size: 12px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.admin-danger {
+  color: #c62828 !important;
+}
+
+.admin-resource-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-resource-row a {
+  font-size: 11px;
+  word-break: break-all;
+  color: var(--gt-navy);
+}
+
+.admin-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid var(--gt-border);
+  border-radius: 12px;
+  max-width: 960px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f4f2ee;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-table th {
+  background: #f9f8f6;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #aaa;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-cell-sub {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+  line-height: 1.4;
+}

@@ -1,14 +1,18 @@
 import {
-  CASE_STUDY_RESOURCES,
   RESOURCE_TYPE_LABELS,
+  type CaseStudyResource,
 } from "@/lib/caseStudy";
 
-export default function CaseStudyTab() {
+export default function CaseStudyTab({
+  resources,
+}: {
+  resources: CaseStudyResource[];
+}) {
   return (
     <div>
       <div className="portal-section-label">Case study resources</div>
       <div className="portal-resource-grid">
-        {CASE_STUDY_RESOURCES.map((r) => (
+        {resources.map((r) => (
           <a
             key={r.id}
             className="portal-res-card"

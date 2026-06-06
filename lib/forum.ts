@@ -25,7 +25,7 @@ export type ForumReply = {
   createdAt: string;
 };
 
-function mapQuestion(item: Record<string, unknown>): ForumQuestion {
+export function mapQuestion(item: Record<string, unknown>): ForumQuestion {
   const data = extractItemFields(item);
   const visibility = fieldString(data.visibility) || "public";
   return {
@@ -40,7 +40,7 @@ function mapQuestion(item: Record<string, unknown>): ForumQuestion {
   };
 }
 
-function mapReply(item: Record<string, unknown>): ForumReply {
+export function mapReply(item: Record<string, unknown>): ForumReply {
   const data = extractItemFields(item);
   return {
     id: String(item._id ?? ""),

@@ -37,13 +37,16 @@ export type DashboardSummary = {
   modules: ProgramModule[];
 };
 
-function allAssignments(): ProgramAssignment[] {
-  return PROGRAM_WEEKS.flatMap((w) => w.assignments);
+function allAssignments(weeks: ProgramWeek[]): ProgramAssignment[] {
+  return weeks.flatMap((w) => w.assignments);
 }
 
-export function buildDashboard(activity: MemberActivity): DashboardSummary {
-  const currentWeek = findCurrentWeek();
-  const assignments = allAssignments();
+export function buildDashboard(
+  activity: MemberActivity,
+  weeks: ProgramWeek[] = PROGRAM_WEEKS,
+): DashboardSummary {
+  const currentWeek = findCurrentWeek(weeks);
+  const assignments = allAssignments(weeks);
   const quizScoreValues = Object.values(activity.quizScores);
   const avgQuizLabel =
     quizScoreValues.length > 0
@@ -57,7 +60,7 @@ export function buildDashboard(activity: MemberActivity): DashboardSummary {
       !activity.submittedAssignmentIds.includes(a.id) && !isPastDate(a.due),
   ).length;
 
-  const totalActivities = PROGRAM_WEEKS.length + assignments.length;
+  const totalActivities = weeks.length + assignments.length;
   const doneCount =
     activity.checkinWeekIds.length +
     activity.submittedAssignmentIds.length +
@@ -93,7 +96,7 @@ export function buildDashboard(activity: MemberActivity): DashboardSummary {
     });
   }
 
-  for (const week of PROGRAM_WEEKS) {
+  for (const week of weeks) {
     for (const a of week.assignments) {
       if (
         !activity.submittedAssignmentIds.includes(a.id) &&
@@ -121,7 +124,10 @@ export function buildDashboard(activity: MemberActivity): DashboardSummary {
   };
 }
 
-export function buildGradeRows(activity: MemberActivity): GradeRow[] {
+export function buildGradeRows(
+  activity: MemberActivity,
+  weeks: ProgramWeek[] = PROGRAM_WEEKS,
+): GradeRow[] {
   const rows: GradeRow[] = [];
 
   for (const mod of PROGRAM_MODULES) {
@@ -137,7 +143,7 @@ export function buildGradeRows(activity: MemberActivity): GradeRow[] {
     }
   }
 
-  for (const week of PROGRAM_WEEKS) {
+  for (const week of weeks) {
     for (const a of week.assignments) {
       const done = activity.submittedAssignmentIds.includes(a.id);
       rows.push({
@@ -166,14 +172,17 @@ export type AssignmentListItem =
       submitted: boolean;
     };
 
-export function buildAssignmentLists(activity: MemberActivity): {
+export function buildAssignmentLists(
+  activity: MemberActivity,
+  weeks: ProgramWeek[] = PROGRAM_WEEKS,
+): {
   due: AssignmentListItem[];
   done: AssignmentListItem[];
 } {
   const due: AssignmentListItem[] = [];
   const done: AssignmentListItem[] = [];
 
-  for (const week of PROGRAM_WEEKS) {
+  for (const week of weeks) {
     for (const a of week.assignments) {
       const item: AssignmentListItem = {
         kind: "assignment",
